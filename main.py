@@ -1,6 +1,6 @@
 import time
 import json
-from signal import receive_messages, send_signal_message
+from signal_api import receive_messages, send_signal_message
 from zendesk import create_or_update_ticket, create_new_ticket
 
 print("📬 Signal-to-Zendesk bridge started...")
