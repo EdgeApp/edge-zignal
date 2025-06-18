@@ -9,7 +9,7 @@ Two main scripts:
 ## 🔧 one-time setup
 
 ```bash
-cd ~/Developer/zignal/bot
+cd ~/Developer/zignal/edge-zignal
 python -m venv venv
 source venv/bin/activate
 pip install requests flask python-dotenv
@@ -18,12 +18,12 @@ pip freeze > requirements.txt  # optional but nice to have
 # Make sure Docker is running the cli
 
 ## Run signal => zendesk bot
-cd ~/Developer/zignal/bot
+cd ~/Developer/zignal/edge-zignal
 source venv/bin/activate
 python main.py
 
 ## Run zendesk => signal webhook
-cd ~/Developer/zignal/bot
+cd ~/Developer/zignal/edge-zignal
 source venv/bin/activate
 python webhook.py
 # Runs locally @
@@ -37,7 +37,7 @@ https://abc1234.ngrok-free.app
 
 
 ## Reinstall or move machines
-cd bot
+cd edge-zignal
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
