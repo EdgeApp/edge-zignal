@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  signal-cli:
+    build: .
+    container_name: signal-cli
+    volumes:
+      - ./data:/root/.local/share/signal-cli
+    ports:
+      - "8080:8080"
+    restart: unless-stopped 
