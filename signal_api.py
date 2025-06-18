@@ -7,7 +7,7 @@ load_dotenv()
 
 # Load environment variables for Zendesk API
 SIGNAL_BRIDGE_NUMBER = os.getenv("SIGNAL_BRIDGE_NUMBER")
-SIGNAL_API_BASE = "http://localhost:8080/v1"
+SIGNAL_API_BASE = "http://localhost:8090/v1"
 
 # Returns a list of unseen messages received from Signal in JSON format
 def receive_messages():
