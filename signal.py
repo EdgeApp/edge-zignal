@@ -6,13 +6,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load environment variables for Zendesk API
-SIGNAL_BOT_NUMBER = os.getenv("SIGNAL_BOT_NUMBER")
+SIGNAL_BRIDGE_NUMBER = os.getenv("SIGNAL_BRIDGE_NUMBER")
 SIGNAL_API_BASE = "http://localhost:8080/v1"
 
 # Returns a list of unseen messages received from Signal in JSON format
 def receive_messages():
     try:
-        response = requests.get(f"{SIGNAL_API_BASE}/receive/{SIGNAL_BOT_NUMBER}")
+        response = requests.get(f"{SIGNAL_API_BASE}/receive/{SIGNAL_BRIDGE_NUMBER}")
         if response.status_code == 200:
             return response.json()
         else:
@@ -26,7 +26,7 @@ def send_signal_message(recipient_uuid, message):
     try:
         payload = {
             "message": message,
-            "number": SIGNAL_BOT_NUMBER,
+            "number": SIGNAL_BRIDGE_NUMBER,
             "recipients": [recipient_uuid]
         }
         response = requests.post(f"{SIGNAL_API_BASE}/send", json=payload)

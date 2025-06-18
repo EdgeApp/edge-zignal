@@ -3,7 +3,7 @@ import json
 from signal import receive_messages, send_signal_message
 from zendesk import create_or_update_ticket, create_new_ticket
 
-print("📬 Signal-to-Zendesk bot started...")
+print("📬 Signal-to-Zendesk bridge started...")
 
 # Main loop to receive messages from Signal and create Zendesk tickets
 while True:
@@ -29,12 +29,12 @@ while True:
                 
                 # # Search for existing ticket by source UUID
                 # print(f"🔎 Checking for existing ticket for source: {source} ({sourceName})")
-                # existing_ticket = create_or_update_ticket(source, sourceName, f"[Signal Bot] {message_text}", sourceUuid)
+                # existing_ticket = create_or_update_ticket(source, sourceName, f"[Signal Bridge] {message_text}", sourceUuid)
                 # if existing_ticket:
 
                 # If source is same as uuid, use sourceName instead
                 print(f"⭐️ New message from user: {sourceName}")
-                ticketNum = create_or_update_ticket(sourceNumber, sourceName, sourceUuid, f"[Signal Bot] {message_text}") # !=> Remove [Signal Bot] prefix after testing
+                ticketNum = create_or_update_ticket(sourceNumber, sourceName, sourceUuid, f"[Signal Bridge] {message_text}") # !=> Remove [Signal Bridge] prefix after testing
                 
                 print(f"📑 Ticket #{ticketNum}")
 
