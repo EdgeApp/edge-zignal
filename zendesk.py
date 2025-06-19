@@ -4,6 +4,7 @@ import requests
 import hashlib
 import random
 from dotenv import load_dotenv
+from monikers import GREEK_ALPHABET, PLANETS, COLORS, FAMOUS_SCIENTISTS, ANIMALS, US_STATES, STAR_CONSTELLATIONS, MYTHOLOGICAL_FIGURES, TREE_SPECIES, FRUITS
 
 # Load environment variables from .env file
 load_dotenv()
@@ -27,9 +28,9 @@ NATO_WORDS = [
 ]
 
 # Creates or updates a Zendesk ticket based on a Signal message
-def create_or_update_ticket(from_number, from_name, from_uuid, message):
+def create_or_update_ticket(from_uuid, message):
     
-    print(f"🔎 Searching for user with UUID: {from_name} - {from_uuid}")
+    print(f"🔎 Searching for user with UUID: {from_uuid}")
     user_id = find_or_create_user(from_uuid)
 
     search_url = f"https://{ZENDESK_SUBDOMAIN}.zendesk.com/api/v2/search.json"
@@ -61,53 +62,6 @@ def create_or_update_ticket(from_number, from_name, from_uuid, message):
 
         print(json.dumps(data, indent=2))
 
-    # Removed april 23 to avoid phone numbers all together
-    # Replaced below comments with code above
-
-    # # Step 1: Find or create user
-    # user_id = ZENDESK_USER
-
-    # if from_number:
-    #     print(f"🔎 Searching for user with phone: {from_number}")
-    #     user_id = find_or_create_user(from_uuid)
-    # else:
-    #     print("⚠️ No phone number provided, using UUID.")
-
-    # # Step 2: Search for open ticket
-    # data = {}
-    # search_url = f"https://{ZENDESK_SUBDOMAIN}.zendesk.com/api/v2/search.json"
-    
-    # # Default sorting
-    # params = {
-    #     "sort_by": 'updated_at',
-    #     "sort_order": 'asc'
-    # }
-
-    # # Try tag-based search if phone is available
-    # if from_number:
-    #     tag = "signal"
-    #     print(f"🔍 Looking for unsolved ticket with tag '{tag}' from user {user_id}")
-    #     query = f'tags:"{tag}" requester_id:{user_id} -status:solved -status:closed'
-    #     params["query"] = query
-
-    #     res = requests.get(search_url, params=params, auth=AUTH, headers=HEADERS)
-    #     data = res.json()
-
-    #     print("🔎 Zendesk search results (by phone/tag):")
-    #     print(json.dumps(data, indent=2))
-
-    # # If no tickets found or no phone number, fallback to UUID + dummy user search
-    # if data.get("count", 0) == 0:
-    #     print("📭 No matching ticket found — searcing for UUID in dummy user")
-    #     query = f'fieldvalue:"{from_uuid}" requester_id:{ZENDESK_USER} -status:solved -status:closed'
-    #     params["query"] = query
-
-    #     res = requests.get(search_url, params=params, auth=AUTH, headers=HEADERS)
-    #     data = res.json()
-
-    #     print("🔎 Zendesk search results (by dummy UUID):")
-    #     print(json.dumps(data, indent=2))
-
     ####################################################
     # Step 3: Update existing ticket or create a new one
     # check if count is greater than 0 or if the results are empty array (aka ticket was deleted but Zendesk api still returns empty results because of caching)
@@ -130,14 +84,13 @@ def create_or_update_ticket(from_number, from_name, from_uuid, message):
         }
         response = requests.put(url, json=payload, auth=AUTH, headers=HEADERS)
         print("📝 Ticket updated:", response.status_code)
-        # don't return if ticket is only updated because returned ID means new ticket?
+        # don't return if ticket is only updated because returned ID means new ticket
         # return ticket_id
     else:
         # No ticket found — create one
         print("📬 No open ticket found. Creating new one...")
         # Return ticket number to be shared with user in auto response
-        return create_new_ticket(from_number, from_name, from_uuid, message, "signal", user_id)
-
+        return create_new_ticket(user_id, "signal", message)
 
 # Finds an existing Zendesk user by phone number or creates a new one
 # 
@@ -182,36 +135,26 @@ def find_or_create_user(from_uuid):
 def hash_uuid(uuid: str) -> str:
     return hashlib.sha256(uuid.encode()).hexdigest()
 
-# Creates a new ticket with the user's phone number for reference
-def create_new_ticket(from_number, from_name, from_uuid, message, tag, requester_id):
+# Creates a new ticket attached to zendesk user id (requester_id)
+def create_new_ticket(requester_id, tag, message=None):
     url = f"https://{ZENDESK_SUBDOMAIN}.zendesk.com/api/v2/tickets.json"
 
-    # If no number, use UUID in subject to be found later
+    # random_moniker = random.choice(GREEK_ALPHABET)
+    # subject = f"Signal Request ({random_moniker})"
     subject = f"Signal Request" 
 
-    # Could query Zendesk for existing tickets and name the subject accordingly - ex. "New User Request" vs. "Request #5"
-    
     payload = {
         "ticket": {
             "subject": subject,
             "comment": {
-                    "body": "New Signal ticket created",
-                    # "author_id": user_id,  # Necessary?
-                    "public": False # Set to False for internal notes
+                "body": "New Signal ticket created",
+                # "author_id": user_id,  # Necessary?
+                "public": False # Set to False for internal notes
             },
             "tags": [tag],
             "requester_id": requester_id
         }
     }
-
-    # only store uuid if no phone number is provided?
-    # if not from_number:
-    payload["ticket"]["custom_fields"] = [
-                {
-                    "id": ZENDESK_SIGNAL_UUID_FIELD,  # Store Signal UUID in custom field
-                    "value": from_uuid
-                }
-            ]
 
     response = requests.post(url, json=payload, auth=AUTH, headers=HEADERS)
 
@@ -227,5 +170,5 @@ def create_new_ticket(from_number, from_name, from_uuid, message, tag, requester
     print(json.dumps(smallerData, indent=2))
 
     return data["ticket"]["id"]
-
     # print("🎫 New ticket created:", response.status_code, response.text)
+
