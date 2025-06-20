@@ -31,6 +31,7 @@ python3 -m venv venv
 source venv/bin/activate
 python -m pip install -r requirements.txt
 ```
+> Must activate virtual environment for pip install to work
 
 Copy the `.env.sample` to `.env` and edit `.env` with the appropriate the ENV configuration.
 
@@ -47,12 +48,27 @@ Run the signal-cli docker container:
 docker-compose up -d
 ```
 
-2. Register your phone number (replace +1234567890 with your number):
-```bash
-docker exec -it signal-cli signal-cli -a +1234567890 register
-```
+2. Connect phone number to Signal
 
-3. Verify your number with the code received via SMS:
+Option A:
+# Link existing Signal account with another device
+```bash
+docker exec -it signal-cli signal-cli link -n "DEVICE_NICKNAME"
+```
+Example Result: sgnl://linkdevice?uuid=dz5j4uXnkytQoPIRTe8sUw%3D%3D&pub_key=BdtMo5308wXyGY72XBN8YgYJv8ju9hsf4SW%2BCXwE6rZW
+> Copy generated code from command line and paste into QR generator to scan with a device that is already logged in
+> Generator: https://www.the-qrcode-generator.com/
+
+
+Option B:
+Register your phone number (replace +1234567890 with your number):
+```bash
+docker exec -it signal-cli signal-cli -a +1234567890 register --captcha "CAPTCHA"
+```
+> Captcha intructions: https://github.com/AsamK/signal-cli/wiki/Registration-with-captcha
+> **Note:** You can use the `--voice` flag to register with a phone call instead of SMS but must try the SMS first
+
+Verify your number with the code received via SMS:
 ```bash
 docker exec -it signal-cli signal-cli -a +1234567890 verify CODE
 ```
