@@ -14,7 +14,27 @@ ZENDESK_EMAIL = os.getenv("ZENDESK_EMAIL")
 ZENDESK_TOKEN = os.getenv("ZENDESK_API_TOKEN")
 ZENDESK_SUBDOMAIN = os.getenv("ZENDESK_SUBDOMAIN")
 ZENDESK_USER = os.getenv("ZENDESK_USER")
-ZENDESK_SIGNAL_UUID_FIELD = int(os.getenv("ZENDESK_SIGNAL_UUID_FIELD"))
+ZENDESK_SIGNAL_UUID_FIELD_RAW = os.getenv("ZENDESK_SIGNAL_UUID_FIELD")
+ZENDESK_SIGNAL_UUID_FIELD = None  # type: int | None
+
+# Check for required environment variables
+missing_vars = []
+if not ZENDESK_EMAIL:
+    missing_vars.append("ZENDESK_EMAIL")
+if not ZENDESK_TOKEN:
+    missing_vars.append("ZENDESK_API_TOKEN")
+if not ZENDESK_SUBDOMAIN:
+    missing_vars.append("ZENDESK_SUBDOMAIN")
+if not ZENDESK_USER:
+    missing_vars.append("ZENDESK_USER")
+if not ZENDESK_SIGNAL_UUID_FIELD_RAW:
+    missing_vars.append("ZENDESK_SIGNAL_UUID_FIELD")
+
+if missing_vars:
+    raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
+
+ZENDESK_SIGNAL_UUID_FIELD = int(ZENDESK_SIGNAL_UUID_FIELD_RAW)  # type: ignore
+
 AUTH = (f"{ZENDESK_EMAIL}/token", ZENDESK_TOKEN)
 HEADERS = { "Content-Type": "application/json" }
 
