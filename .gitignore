@@ -4,5 +4,7 @@ __pycache__
 venv/
 
 signal-cli/data/
+signal-cli/signal-cli-config/
+signal-cli/logs/
 
 .DS_Store
