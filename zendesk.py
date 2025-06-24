@@ -150,9 +150,8 @@ def hash_uuid(uuid: str) -> str:
 def create_new_ticket(requester_id, tag, message=None):
     url = f"https://{ZENDESK_SUBDOMAIN}.zendesk.com/api/v2/tickets.json"
 
-    # random_moniker = random.choice(GREEK_ALPHABET)
-    # subject = f"Signal Request ({random_moniker})"
-    subject = f"Signal Request" 
+    random_moniker = random.choice(GREEK_ALPHABET)
+    subject = f"Signal Request ({random_moniker})"
 
     payload = {
         "ticket": {
