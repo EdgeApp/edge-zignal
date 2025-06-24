@@ -1,0 +1,15 @@
+[Unit]
+Description=Signal CLI REST API via Docker Compose
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/home/edgy/apps/edge-zignal/signal-cli
+ExecStart=/usr/bin/docker compose up --detach
+ExecStop=/usr/bin/docker compose down
+Restart=always
+TimeoutStartSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
