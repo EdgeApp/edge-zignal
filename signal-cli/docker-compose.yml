@@ -1,9 +1,16 @@
+version: "3.8"
+
 services:
   signal-cli:
-    build: .
+    image: bbernhard/signal-cli-rest-api:latest
     container_name: signal-cli
+    environment:
+      - MODE=native
     volumes:
       - ./data:/root/.local/share/signal-cli
     ports:
-      - "8090:8080"
-    restart: unless-stopped 
+      # If we do this, only localhost can access the Signal API:
+      - "127.0.0.1:8090:8080"
+      # If we do this, anybody on the Edge LAN can access the API:
+      # "8090:8080"
+    restart: unless-stopped

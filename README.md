@@ -21,13 +21,15 @@ For Ubuntu, installation script is the following:
 sudo apt update
 sudo apt install python3
 sudo apt install python3-pip
+sudo apt install python3.12-venv
 ```
 
 Install the package dependencies:
 
 ```sh
-pip3 install -r requirements.txt
 python3 -m venv venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
 Copy the `.env.sample` to `.env` and edit `.env` with the appropriate the ENV configuration.
@@ -59,45 +61,7 @@ docker exec -it signal-cli signal-cli -a +1234567890 verify CODE
 
 ## Run the Zignal service
 
-
 ```sh
 source venv/bin/activate
 python3 main.py
 ```
-
-## 🔧 one-time setup (OLD DOCUMENTATION)
-
-```bash
-cd ~/Developer/zignal/edge-zignal
-python -m venv venv
-source venv/bin/activate
-pip install requests flask python-dotenv
-pip freeze > requirements.txt  # optional but nice to have
-
-# Make sure Docker is running the cli
-
-## Run signal => zendesk bot
-cd ~/Developer/zignal/edge-zignal
-source venv/bin/activate
-python main.py
-
-## Run zendesk => signal webhook
-cd ~/Developer/zignal/edge-zignal
-source venv/bin/activate
-python webhook.py
-# Runs locally @
-http://localhost:5000/zendesk-replies
-
-
-## Command to make webhook public to be reachable by zendesk online
-ngrok http 5000
-# example response
-https://abc1234.ngrok-free.app
-
-
-## Reinstall or move machines
-cd edge-zignal
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-

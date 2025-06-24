@@ -1,0 +1,14 @@
+[Unit]
+Description=Edge Zignal Python Service
+After=network.target
+
+[Service]
+Type=simple
+User=edgy
+WorkingDirectory=/home/edgy/apps/edge-zignal
+ExecStart=/home/edgy/apps/edge-zignal/venv/bin/python3 main.py
+Restart=always
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
