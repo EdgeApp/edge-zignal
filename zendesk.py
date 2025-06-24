@@ -4,7 +4,7 @@ import requests
 import hashlib
 import random
 from dotenv import load_dotenv
-from monikers import GREEK_ALPHABET, PLANETS, COLORS, FAMOUS_SCIENTISTS, ANIMALS, US_STATES, STAR_CONSTELLATIONS, MYTHOLOGICAL_FIGURES, TREE_SPECIES, FRUITS
+from monikers import GREEK_ALPHABET
 
 # Load environment variables from .env file
 load_dotenv()
