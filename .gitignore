@@ -1,6 +1,13 @@
-__pycache__
+# Python cache and environment
+__pycache__/
 .env
 
 venv/
 
-signal-cli/data/
+# Signal CLI runtime and sensitive data
+signal-cli/data/              # Signal CLI runtime data
+signal-cli/signal-cli-config/ # Signal account credentials and keys (DO NOT DELETE)
+signal-cli/logs/              # Signal CLI logs
+
+# macOS system files
+.DS_Store
