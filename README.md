@@ -4,7 +4,7 @@ A bridge service for Edge Support to bridge messages in Signal to Zendesk.
 
 It has two main scripts:
 - `main.py` — takes Signal messages and puts them in Zendesk
-- `webhook.py` — takes Zendesk replies and sends back through Signal
+
 
 ---
 

@@ -4,7 +4,8 @@ import requests
 import hashlib
 import random
 from dotenv import load_dotenv
-from monikers import GREEK_ALPHABET
+from datetime import datetime
+from monikers import NATO_WORDS
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +17,7 @@ ZENDESK_SUBDOMAIN = os.getenv("ZENDESK_SUBDOMAIN")
 
 # Check for required environment variables
 missing_vars = []
-if not ZENDESK_EMAIL:
+if not ZENDESK_EMAIL:   
     missing_vars.append("ZENDESK_EMAIL")
 if not ZENDESK_TOKEN:
     missing_vars.append("ZENDESK_API_TOKEN")
@@ -26,17 +27,14 @@ if not ZENDESK_SUBDOMAIN:
 if missing_vars:
     raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
-AUTH = (f"{ZENDESK_EMAIL}/token", ZENDESK_TOKEN)
-HEADERS = { "Content-Type": "application/json" }
+# At this point, we know these are not None due to the check above - removes linter errors
+assert ZENDESK_EMAIL is not None
+assert ZENDESK_TOKEN is not None
+assert ZENDESK_SUBDOMAIN is not None
 
-# Random naming convention
-NATO_WORDS = [
-    "Alfa", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot",
-    "Golf", "Hotel", "India", "Juliett", "Kilo", "Lima",
-    "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo",
-    "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "X-ray",
-    "Yankee", "Zulu"
-]
+# Type-safe auth tuple - we know these are not None after the check above
+AUTH = (f"{ZENDESK_EMAIL}/token", ZENDESK_TOKEN)  # type: ignore
+HEADERS = { "Content-Type": "application/json" }
 
 # Creates or updates a Zendesk ticket based on a Signal message
 def create_or_update_ticket(from_uuid, message):
@@ -127,11 +125,11 @@ def find_or_create_user(from_uuid):
     else:
         # No user found, create one
         print("➕ No user found. Creating new user...")
-        random_word = random.choice(NATO_WORDS) # give user a random name
+        random_moniker = random.choice(NATO_WORDS) # give user a random name
         create_url = f"https://{ZENDESK_SUBDOMAIN}.zendesk.com/api/v2/users.json"
         payload = {
             "user": {
-                "name": f'Signal User ({random_word})',
+                "name": f'Signal User ({random_moniker})',
                 "external_id": hashed_uuid
                 
             }
@@ -150,8 +148,9 @@ def hash_uuid(uuid: str) -> str:
 def create_new_ticket(requester_id, tag, message=None):
     url = f"https://{ZENDESK_SUBDOMAIN}.zendesk.com/api/v2/tickets.json"
 
-    random_moniker = random.choice(GREEK_ALPHABET)
-    subject = f"Signal Request ({random_moniker})"
+    # Format current date as "Aug 2 5:30p" - cross-platform compatible
+    current_date = datetime.now().strftime("%b %d %I:%M%p").replace(" 0", " ").replace("AM", "am").replace("PM", "pm")
+    subject = f"Signal Request ({current_date})"
 
     payload = {
         "ticket": {

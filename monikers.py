@@ -1,3 +1,11 @@
+NATO_WORDS = [
+    "Alfa", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot",
+    "Golf", "Hotel", "India", "Juliett", "Kilo", "Lima",
+    "Mike", "November", "Oscar", "Papa", "Quebec", "Romeo",
+    "Sierra", "Tango", "Uniform", "Victor", "Whiskey", "X-ray",
+    "Yankee", "Zulu"
+]
+
 GREEK_ALPHABET = [
     "Alpha", "Beta", "Gamma", "Delta", "Epsilon", 
     "Zeta", "Eta", "Theta", "Iota", "Kappa", 
