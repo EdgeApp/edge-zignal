@@ -34,7 +34,7 @@ while True:
 
                 # If source is same as uuid, use sourceName instead
                 print(f"⭐️ New message from user: {sourceName}")
-                ticketNum = create_or_update_ticket(sourceNumber, sourceName, sourceUuid, f"[Signal Bridge] {message_text}") # !=> Remove [Signal Bridge] prefix after testing
+                ticketNum = create_or_update_ticket(sourceUuid, f"[Signal Bridge] {message_text}") # !=> Remove [Signal Bridge] prefix after testing
                 
                 print(f"📑 Ticket #{ticketNum}")
 
