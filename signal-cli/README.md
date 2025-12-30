@@ -34,4 +34,27 @@ docker-compose down
 
 - The container exposes port 8090 for the JSON-RPC interface
 - All Signal CLI data is stored in the `./data` directory
-- The container will automatically restart unless explicitly stopped 
+- The container will automatically restart unless explicitly stopped
+
+## Periodic Upgrades
+
+Because Signal changes their protocol from time to time, we need to keep the signal-cli version fairly up-to-date.
+
+```sh
+cd edge-zignal/signal-cli
+
+# Pull latest image
+docker-compose pull signal-cli
+
+# Stop old containers
+docker-compose down --volumes --remove-orphans
+
+# Start updated service
+docker-compose up -d signal-cli
+
+# Verify active version
+docker exec signal-cli signal-cli --version
+
+# Prune unused images (keeps the one in use)
+docker image prune -a -f
+```
