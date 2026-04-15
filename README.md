@@ -2,9 +2,9 @@
 
 A bridge service for Edge Support to bridge messages in Signal to Zendesk.
 
-It has two main scripts:
-- `main.py` — takes Signal messages and puts them in Zendesk
+It has one main script:
 
+- `main.py` — takes Signal messages and puts them in Zendesk
 
 ---
 
@@ -41,31 +41,31 @@ cp .env.sample .env
 
 ## Run the signal-cli service
 
-Run the signal-cli docker container:
-
 1. Build and start the container:
-```bash
+```sh
 docker-compose up -d
 ```
 
 2. Connect phone number to Signal
 
-Option A:
-# Link existing Signal account with another device
+**Option A — QR code login (easiest):**
+```sh
+curl http://localhost:8090/v1/qrcodelink?device_name=edge-zignal -o login.png
+catimg login.png
+```
+
+**Option B — Link existing Signal account with another device:**
 ```bash
 docker exec -it signal-cli signal-cli link -n "DEVICE_NICKNAME"
 ```
-Example Result: sgnl://linkdevice?uuid=dz5j4uXnkytQoPIRTe8sUw%3D%3D&pub_key=BdtMo5308wXyGY72XBN8YgYJv8ju9hsf4SW%2BCXwE6rZW
-> Copy generated code from command line and paste into QR generator to scan with a device that is already logged in
+> Copy the generated `sgnl://` link and paste into a QR generator to scan with a device that is already logged in.
 > Generator: https://www.the-qrcode-generator.com/
 
-
-Option B:
-Register your phone number (replace +1234567890 with your number):
+**Option C — Register a new phone number:**
 ```bash
 docker exec -it signal-cli signal-cli -a +1234567890 register --captcha "CAPTCHA"
 ```
-> Captcha intructions: https://github.com/AsamK/signal-cli/wiki/Registration-with-captcha
+> Captcha instructions: https://github.com/AsamK/signal-cli/wiki/Registration-with-captcha
 > **Note:** You can use the `--voice` flag to register with a phone call instead of SMS but must try the SMS first
 
 Verify your number with the code received via SMS:
@@ -73,7 +73,7 @@ Verify your number with the code received via SMS:
 docker exec -it signal-cli signal-cli -a +1234567890 verify CODE
 ```
 
-4. The Signal CLI daemon will be running and accessible at http://localhost:8090
+3. The Signal CLI daemon will be running and accessible at http://localhost:8090
 
 ## Run the Zignal service
 
