@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Load environment variables for Zendesk API
+# Load environment variables for Signal API
 SIGNAL_BRIDGE_NUMBER = os.getenv("SIGNAL_BRIDGE_NUMBER")
 SIGNAL_API_BASE = "http://localhost:8090/v1"
 

@@ -1,10 +1,10 @@
 # Zignal
 
-A bridge service for Edge Support to bridge messages in Signal to Zendesk.
+A bridge service for Edge Support to bridge messages in Signal to Intercom.
 
 It has one main script:
 
-- `main.py` — takes Signal messages and puts them in Zendesk
+- `main.py` — takes Signal messages and puts them in Intercom
 
 ---
 
@@ -38,6 +38,10 @@ Copy the `.env.sample` to `.env` and edit `.env` with the appropriate the ENV co
 ```
 cp .env.sample .env
 ```
+
+You'll need:
+- **INTERCOM_ACCESS_TOKEN** — from the Intercom Developer Hub (Configure > Authentication)
+- **INTERCOM_ADMIN_ID** — the admin ID the bridge will act as (find via Intercom dashboard or `GET https://api.intercom.io/admins`)
 
 ## Run the signal-cli service
 
