@@ -9,5 +9,8 @@ signal-cli/data/              # Signal CLI runtime data
 signal-cli/signal-cli-config/ # Signal account credentials and keys (DO NOT DELETE)
 signal-cli/logs/              # Signal CLI logs
 
+# QR code login images
+login.png
+
 # macOS system files
 .DS_Store
