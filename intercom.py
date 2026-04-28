@@ -144,7 +144,11 @@ def find_or_create_contact(from_uuid):
     contacts = data.get("data", [])
 
     if contacts:
-        contact_id = contacts[0]["id"]
+        contact = contacts[0]
+        contact_id = contact["id"]
+        custom_attributes = contact.get("custom_attributes") or {}
+        if custom_attributes.get("signal_id_hash") != hashed_uuid:
+            _update_signal_id_hash(contact_id, hashed_uuid)
         print(f"👤 Found existing contact: {contact_id}")
         return contact_id
     else:
@@ -159,8 +163,23 @@ def find_or_create_contact(from_uuid):
         create_res = requests.post(create_url, json=create_payload, headers=HEADERS)
         contact_data = create_res.json()
         contact_id = contact_data["id"]
+        _update_signal_id_hash(contact_id, hashed_uuid)
         print(f"✅ Contact created with ID: {contact_id}")
         return contact_id
+
+
+def _update_signal_id_hash(contact_id: str, hashed_uuid: str) -> None:
+    """Stores the Signal ID hash in a visible Intercom custom attribute."""
+    payload = {
+        "custom_attributes": {
+            "signal_id_hash": hashed_uuid
+        }
+    }
+    res = requests.put(f"{BASE_URL}/contacts/{contact_id}", json=payload, headers=HEADERS)
+    if res.status_code == 200:
+        print("✅ Updated contact signal_id_hash custom attribute")
+    else:
+        print(f"⚠️ Failed to update signal_id_hash: {res.status_code} {res.text}")
 
 
 def hash_uuid(uuid: str) -> str:
