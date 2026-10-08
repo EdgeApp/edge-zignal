@@ -3,6 +3,7 @@ import json
 import requests
 import hashlib
 import random
+from html import escape
 from dotenv import load_dotenv
 from datetime import datetime
 from monikers import NATO_WORDS
@@ -61,7 +62,7 @@ def create_or_update_conversation(from_uuid):
 
     # 3) Either update or create
     if conversation_id:
-        _add_note_to_conversation(conversation_id, contact_id)
+        _add_user_reply_to_conversation(conversation_id, contact_id)
     else:
         print("📬 No open conversation found. Creating new one...")
         return create_new_conversation(contact_id)
@@ -101,22 +102,22 @@ def _search_open_conversation(contact_id):
 
 def _verify_conversation_is_open(conversation_id):
     """Directly fetches a conversation by ID to confirm it's still open."""
-    res = requests.get(f"{BASE_URL}/conversations/{conversation_id}", headers=HEADERS)
+    res = requests.get(f"{BASE_URL}/conversations/{conversation_id}", headers=HEADERS, timeout=15)
     if res.status_code != 200:
         return False
     data = res.json()
     return data.get("state") == "open"
 
 
-def _add_note_to_conversation(conversation_id, contact_id):
-    """Adds a generic admin note to an existing conversation (no message content)."""
-    print(f"✏️ Adding note to existing conversation #{conversation_id} for contact {contact_id}")
+def _add_user_reply_to_conversation(conversation_id, contact_id):
+    """Adds a generic reply from the Signal contact (no message content)."""
+    print(f"✏️ Adding user reply to existing conversation #{conversation_id} for contact {contact_id}")
 
     reply_url = f"{BASE_URL}/conversations/{conversation_id}/reply"
     reply_payload = {
-        "message_type": "note",
-        "type": "admin",
-        "admin_id": INTERCOM_ADMIN_ID,
+        "message_type": "comment",
+        "type": "user",
+        "intercom_user_id": contact_id,
         "body": "New Signal message received"
     }
     response = requests.post(reply_url, json=reply_payload, headers=HEADERS)
@@ -242,3 +243,52 @@ def get_or_create_tag(tag_name):
     if res.status_code == 200:
         return res.json().get("id")
     return None
+
+
+def add_signal_response_note(recipient_uuid, device_name):
+    """Annotate an existing conversation without creating a user message."""
+    response = requests.post(
+        f"{BASE_URL}/contacts/search",
+        json={"query": {"field": "external_id", "operator": "=", "value": hash_uuid(recipient_uuid)}},
+        headers=HEADERS, timeout=15
+    )
+    response.raise_for_status()
+    contacts = response.json().get("data", [])
+    if not contacts:
+        print("No existing Intercom contact for Signal reply; skipping note.")
+        return False
+    contact_id = contacts[0]["id"]
+    response = requests.post(
+        f"{BASE_URL}/conversations/search",
+        json={
+            "query": {"field": "contact_ids", "operator": "=", "value": contact_id},
+            "sort": {"field": "updated_at", "order": "descending"}
+        },
+        headers=HEADERS, timeout=15
+    )
+    response.raise_for_status()
+    conversations = response.json().get("conversations", [])
+    # Include closed conversations: recording a reply must not create a ticket.
+    conversation_id = (
+        conversations[0]["id"] if conversations
+        else _recent_conversations.get(contact_id)
+    )
+    # Search can return old tickets while a newly created one is still unindexed.
+    cached_id = _recent_conversations.get(contact_id)
+    if cached_id and conversations and not any(c["id"] == cached_id for c in conversations):
+        if _verify_conversation_is_open(cached_id):
+            conversation_id = cached_id
+    if not conversation_id:
+        print("No existing Intercom conversation for Signal reply; skipping note.")
+        return False
+    body = (
+        f'Response sent in Signal by device "{escape(device_name)}".'
+        if device_name else "Response sent in Signal by unknown device."
+    )
+    response = requests.post(
+        f"{BASE_URL}/conversations/{conversation_id}/reply",
+        json={"message_type": "note", "type": "admin", "admin_id": INTERCOM_ADMIN_ID, "body": body},
+        headers=HEADERS, timeout=15
+    )
+    response.raise_for_status()
+    return True

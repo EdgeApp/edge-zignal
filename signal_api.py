@@ -42,3 +42,29 @@ def send_signal_message(recipient_uuid, message):
             print(f"❌ Failed to send message to {recipient_uuid}: {response.text}")
     except Exception as e:
         print(f"Error sending message to {recipient_uuid}: {str(e)}")
+
+
+def resolve_device_name(device_id, sent_timestamp):
+    """Resolve against the current list, never a permanent ID-to-person mapping."""
+    if not isinstance(device_id, int) or isinstance(device_id, bool):
+        return None
+    try:
+        response = requests.get(
+            f"{SIGNAL_API_BASE}/devices/{SIGNAL_BRIDGE_NUMBER}", timeout=15
+        )
+        response.raise_for_status()
+        devices = response.json()
+        if not isinstance(devices, list):
+            return None
+        for device in devices:
+            if not isinstance(device, dict) or device.get("id") != device_id:
+                continue
+            # An ID may have been reused since a queued message was sent.
+            created = device.get("creation_timestamp")
+            if not isinstance(created, (int, float)) or created <= 0 or created > sent_timestamp:
+                return None
+            name = device.get("name")
+            return name.strip() if isinstance(name, str) and name.strip() else None
+    except (requests.RequestException, ValueError):
+        print("Could not resolve Signal device name; using unknown device.")
+    return None

@@ -99,3 +99,44 @@ continues with the same conversation ID; it does not create another ticket or
 retry the hint automatically.
 
 Run the mocked tests with `python3 -m unittest discover -s tests -v`.
+
+## Incoming Signal messages
+
+The first incoming message creates a conversation from the Signal contact.
+Follow-up messages on an existing open conversation add a user reply from that
+same contact saying "New Signal message received". Only these generic
+notifications are stored in Intercom, never the Signal message contents.
+
+Run the mocked regression test with `python3 -m unittest discover -s tests -v`.
+
+## Agent reply notes
+
+Direct replies sent from another device linked to the support Signal account add
+an internal note to the recipient's most recently updated existing Intercom
+conversation (including a closed conversation):
+
+> Response sent in Signal by device "jared-mac".
+
+The bridge reads `syncMessage.sentMessage` and resolves `sourceDevice` using a
+fresh `GET /v1/devices/{number}` lookup. No permanent device mapping is required.
+Use descriptive names in Signal's linked-device list when linking or relinking.
+If the name cannot be resolved, or the current device was linked after the reply
+was sent (possible ID reuse), the note says "unknown device".
+
+Notes use `INTERCOM_ADMIN_ID` as their author. Set this to a dedicated bridge
+teammate's admin ID if desired; the access token authenticates API requests.
+Reply text and attachments are not copied to Intercom or dumped into bridge logs.
+Group messages, Note to Self, receipts and reactions do not create reply notes.
+No contact or conversation is created solely because an agent sent a reply.
+
+Repeated sync events are suppressed for the last 10,000 successful notes in the
+running process. This is not a durable delivery queue: restarting clears that
+history, and failed Intercom writes are logged but are not automatically retried
+unless the sync event is received again. A live smoke test should confirm the
+installed REST API version returns device names and creation timestamps.
+
+Run the mocked regression tests (no live Signal or Intercom calls):
+
+```sh
+python3 -m unittest discover -s tests -v
+```
