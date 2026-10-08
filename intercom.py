@@ -192,9 +192,29 @@ def create_new_conversation(contact_id):
         # still get routed to this conversation instead of creating duplicates.
         _recent_conversations[contact_id] = conversation_id
         print(f"💾 Cached conversation #{conversation_id} for contact {contact_id}")
+        _add_signal_search_hint(conversation_id, contact_id)
         tag_conversation(conversation_id, "signal")
 
     return conversation_id
+
+
+def _add_signal_search_hint(conversation_id, contact_id):
+    """Add a one-time navigation hint without blocking the Signal acknowledgment."""
+    try:
+        response = requests.post(
+            f"{BASE_URL}/conversations/{conversation_id}/reply",
+            json={
+                "message_type": "comment",
+                "type": "user",
+                "intercom_user_id": contact_id,
+                "body": f"Search Signal for Conversation: {conversation_id}"
+            },
+            headers=HEADERS,
+            timeout=15
+        )
+        response.raise_for_status()
+    except requests.RequestException:
+        print(f"Could not add Signal search hint to conversation #{conversation_id}")
 
 
 def tag_conversation(conversation_id, tag_name):
