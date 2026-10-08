@@ -2,6 +2,8 @@
 
 A bridge service for Edge Support to bridge messages in Signal to Intercom.
 
+For production updates, see the [deployment guide](DEPLOYMENT.md).
+
 It has one main script:
 
 - `main.py` — takes Signal messages and puts them in Intercom
