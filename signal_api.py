@@ -7,12 +7,12 @@ load_dotenv()
 
 # Load environment variables for Signal API
 SIGNAL_BRIDGE_NUMBER = os.getenv("SIGNAL_BRIDGE_NUMBER")
-SIGNAL_API_BASE = "http://localhost:8090/v1"
+SIGNAL_API_BASE = "http://localhost:8090"
 
 # Returns a list of unseen messages received from Signal in JSON format
 def receive_messages():
     try:
-        response = requests.get(f"{SIGNAL_API_BASE}/receive/{SIGNAL_BRIDGE_NUMBER}")
+        response = requests.get(f"{SIGNAL_API_BASE}/v1/receive/{SIGNAL_BRIDGE_NUMBER}")
         if response.status_code == 200:
             return response.json()
         else:
@@ -27,9 +27,10 @@ def send_signal_message(recipient_uuid, message):
         payload = {
             "message": message,
             "number": SIGNAL_BRIDGE_NUMBER,
-            "recipients": [recipient_uuid]
+            "recipients": [recipient_uuid],
+            "text_mode": "styled"
         }
-        response = requests.post(f"{SIGNAL_API_BASE}/send", json=payload)
+        response = requests.post(f"{SIGNAL_API_BASE}/v2/send", json=payload)
         
         # debugging
         data = response.json()
@@ -50,7 +51,7 @@ def resolve_device_name(device_id, sent_timestamp):
         return None
     try:
         response = requests.get(
-            f"{SIGNAL_API_BASE}/devices/{SIGNAL_BRIDGE_NUMBER}", timeout=15
+            f"{SIGNAL_API_BASE}/v1/devices/{SIGNAL_BRIDGE_NUMBER}", timeout=15
         )
         response.raise_for_status()
         devices = response.json()

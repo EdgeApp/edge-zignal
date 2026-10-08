@@ -162,3 +162,15 @@ a contact. This relies on undocumented behavior and has not been tested on Linux
 The browser and OS choose the installed Signal app; the link cannot force Beta.
 The copyable ID remains available if launching fails. No customer identifiers
 are included in the link.
+
+## Customer acknowledgment formatting
+
+When a new Intercom conversation is created, the Signal acknowledgment uses a
+bold welcome, an italic privacy note, and a monospace conversation reference at
+the bottom. The reference remains searchable as `Conversation: <id>`. Existing
+open conversations do not repeat the acknowledgment.
+
+Sending uses `/v2/send` with `text_mode: styled`; receiving and device lookup
+remain on their existing v1 endpoints. This was tested against the deployed
+Signal REST API with a dedicated recipient before rollout. The privacy copy
+refers to message contents; generic ticket notifications still go to Intercom.
