@@ -152,3 +152,13 @@ visually checked in the Inbox. Creation HTML rendered despite the API docs sayin
 HTML is unsupported. The ID block displayed a copy control; inline `<code>` sent
 through the API became a block, so device names use bold instead. The Signal
 acknowledgment is unchanged.
+
+The one-time search hint also includes an **Open Signal ↗** link to
+`https://signal.me/#open`. Intercom preserves this HTTPS link, whereas it strips
+direct `sgnl://` destinations. Signal's website forwards the fragment to the app;
+`#open` is an unrecognized destination, not an official launch command. The link
+was tested in the demo conversation on macOS and opens Signal without selecting
+a contact. This relies on undocumented behavior and has not been tested on Linux.
+The browser and OS choose the installed Signal app; the link cannot force Beta.
+The copyable ID remains available if launching fails. No customer identifiers
+are included in the link.
