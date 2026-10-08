@@ -62,7 +62,7 @@ def create_or_update_conversation(from_uuid):
 
     # 3) Either update or create
     if conversation_id:
-        _add_note_to_conversation(conversation_id, contact_id)
+        _add_user_reply_to_conversation(conversation_id, contact_id)
     else:
         print("📬 No open conversation found. Creating new one...")
         return create_new_conversation(contact_id)
@@ -109,15 +109,15 @@ def _verify_conversation_is_open(conversation_id):
     return data.get("state") == "open"
 
 
-def _add_note_to_conversation(conversation_id, contact_id):
-    """Adds a generic admin note to an existing conversation (no message content)."""
-    print(f"✏️ Adding note to existing conversation #{conversation_id} for contact {contact_id}")
+def _add_user_reply_to_conversation(conversation_id, contact_id):
+    """Adds a generic reply from the Signal contact (no message content)."""
+    print(f"✏️ Adding user reply to existing conversation #{conversation_id} for contact {contact_id}")
 
     reply_url = f"{BASE_URL}/conversations/{conversation_id}/reply"
     reply_payload = {
-        "message_type": "note",
-        "type": "admin",
-        "admin_id": INTERCOM_ADMIN_ID,
+        "message_type": "comment",
+        "type": "user",
+        "intercom_user_id": contact_id,
         "body": "New Signal message received"
     }
     response = requests.post(reply_url, json=reply_payload, headers=HEADERS)

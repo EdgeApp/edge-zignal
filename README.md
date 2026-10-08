@@ -86,6 +86,15 @@ source venv/bin/activate
 python3 main.py
 ```
 
+## Incoming Signal messages
+
+The first incoming message creates a conversation from the Signal contact.
+Follow-up messages on an existing open conversation add a user reply from that
+same contact saying "New Signal message received". Only these generic
+notifications are stored in Intercom, never the Signal message contents.
+
+Run the mocked regression test with `python3 -m unittest discover -s tests -v`.
+
 ## Agent reply notes
 
 Direct replies sent from another device linked to the support Signal account add
