@@ -141,7 +141,7 @@ class IntercomTests(unittest.TestCase):
         self.assertEqual(post.call_args.args[0], 'https://api.intercom.io/conversations/ticket/reply')
         self.assertEqual(post.call_args.kwargs['json'], {
             'message_type': 'note', 'type': 'admin', 'admin_id': 'test-admin',
-            'body': 'Response sent in Signal by device "jared-&lt;mac&gt;".'
+            'body': '<p>Response sent in Signal by <b>jared-&lt;mac&gt;</b>.</p>'
         })
 
     @patch('intercom.requests.post')
@@ -162,7 +162,7 @@ class IntercomTests(unittest.TestCase):
         post.side_effect = [response({'data': [{'id': 'contact'}]}), response({'conversations': []}), response({})]
         self.assertTrue(intercom.add_signal_response_note('customer-uuid', None))
         self.assertIn('/recent-ticket/reply', post.call_args.args[0])
-        self.assertEqual(post.call_args.kwargs['json']['body'], 'Response sent in Signal by unknown device.')
+        self.assertEqual(post.call_args.kwargs['json']['body'], '<p>Response sent in Signal by <b>unknown device</b>.</p>')
 
     @patch('intercom.requests.get')
     @patch('intercom.requests.post')

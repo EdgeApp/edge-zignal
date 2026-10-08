@@ -21,10 +21,11 @@ class SearchHintTests(unittest.TestCase):
         post.side_effect = [created, Mock()]
         self.assertEqual(intercom.create_new_conversation('contact'), '123456')
         self.assertEqual(post.call_count, 2)
+        self.assertEqual(post.call_args_list[0].kwargs['json']['body'], '<h2>💬 Signal conversation started</h2>')
         self.assertEqual(post.call_args_list[0].args[0], 'https://api.intercom.io/conversations')
         self.assertEqual(post.call_args.kwargs['json'], {
             'message_type': 'comment', 'type': 'user', 'intercom_user_id': 'contact',
-            'body': 'Search Signal for Conversation: 123456'
+            'body': '<p>🔎 Search Signal for:</p><pre><code>123456</code></pre>'
         })
         self.assertEqual(post.call_args.args[0], 'https://api.intercom.io/conversations/123456/reply')
         self.assertEqual(intercom._recent_conversations['contact'], '123456')
@@ -63,7 +64,8 @@ class SearchHintTests(unittest.TestCase):
         intercom.create_or_update_conversation('customer-uuid')
         hint.assert_not_called()
         post.assert_called_once()
-        self.assertEqual(post.call_args.kwargs['json']['body'], 'New Signal message received')
+        self.assertEqual(post.call_args.kwargs['json']['body'], '<p><em>📩 New Signal message received</em></p>')
+        self.assertEqual(post.call_args.args[0], 'https://api.intercom.io/conversations/123456/reply')
 
 
 if __name__ == '__main__':

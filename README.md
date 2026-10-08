@@ -89,8 +89,8 @@ python3 main.py
 ## Finding a conversation in Signal
 
 When a new Intercom conversation is created, the bridge adds one user-attributed
-message: "Search Signal for Conversation: <id>". Search for `Conversation: <id>`
-in Signal to find the matching acknowledgment. The hint contains only the
+message: "🔎 Search Signal for:" followed by an HTML code block containing only
+the ID. Copy the ID into Signal search to find the matching acknowledgment. The hint contains only the
 conversation ID, never Signal message contents. Follow-up incoming messages do
 not repeat it.
 
@@ -99,23 +99,13 @@ continues with the same conversation ID; it does not create another ticket or
 retry the hint automatically.
 
 Run the mocked tests with `python3 -m unittest discover -s tests -v`.
-
-## Incoming Signal messages
-
-The first incoming message creates a conversation from the Signal contact.
-Follow-up messages on an existing open conversation add a user reply from that
-same contact saying "New Signal message received". Only these generic
-notifications are stored in Intercom, never the Signal message contents.
-
-Run the mocked regression test with `python3 -m unittest discover -s tests -v`.
-
 ## Agent reply notes
 
 Direct replies sent from another device linked to the support Signal account add
 an internal note to the recipient's most recently updated existing Intercom
 conversation (including a closed conversation):
 
-> Response sent in Signal by device "jared-mac".
+> Response sent in Signal by **jared-mac**.
 
 The bridge reads `syncMessage.sentMessage` and resolves `sourceDevice` using a
 fresh `GET /v1/devices/{number}` lookup. No permanent device mapping is required.
@@ -140,3 +130,25 @@ Run the mocked regression tests (no live Signal or Intercom calls):
 ```sh
 python3 -m unittest discover -s tests -v
 ```
+## Incoming Signal messages
+
+The first incoming message creates a conversation from the Signal contact.
+Follow-up messages on an existing open conversation add a user reply from that
+same contact saying "📩 New Signal message received" in italics. Only these generic
+notifications are stored in Intercom, never the Signal message contents.
+
+Run the mocked regression test with `python3 -m unittest discover -s tests -v`.
+
+## Message formatting
+
+- Conversation creation: `<h2>💬 Signal conversation started</h2>`.
+- Incoming updates: `<p><em>📩 New Signal message received</em></p>`.
+- Search hint: a normal label followed by an ID-only `<pre><code>` block.
+- Agent response notes: normal text with a bold, HTML-escaped device name,
+  or bold "unknown device" when unavailable.
+
+These formats were tested in an Intercom demo conversation using API v2.11 and
+visually checked in the Inbox. Creation HTML rendered despite the API docs saying
+HTML is unsupported. The ID block displayed a copy control; inline `<code>` sent
+through the API became a block, so device names use bold instead. The Signal
+acknowledgment is unchanged.

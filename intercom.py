@@ -118,7 +118,7 @@ def _add_user_reply_to_conversation(conversation_id, contact_id):
         "message_type": "comment",
         "type": "user",
         "intercom_user_id": contact_id,
-        "body": "New Signal message received"
+        "body": "<p><em>📩 New Signal message received</em></p>"
     }
     response = requests.post(reply_url, json=reply_payload, headers=HEADERS)
     print("📝 Conversation updated:", response.status_code)
@@ -178,7 +178,7 @@ def create_new_conversation(contact_id):
             "type": "user",
             "id": contact_id
         },
-        "body": "New Signal conversation started"
+        "body": "<h2>💬 Signal conversation started</h2>"
     }
 
     response = requests.post(url, json=payload, headers=HEADERS)
@@ -208,7 +208,7 @@ def _add_signal_search_hint(conversation_id, contact_id):
                 "message_type": "comment",
                 "type": "user",
                 "intercom_user_id": contact_id,
-                "body": f"Search Signal for Conversation: {conversation_id}"
+                "body": f"<p>🔎 Search Signal for:</p><pre><code>{escape(str(conversation_id))}</code></pre>"
             },
             headers=HEADERS,
             timeout=15
@@ -282,8 +282,8 @@ def add_signal_response_note(recipient_uuid, device_name):
         print("No existing Intercom conversation for Signal reply; skipping note.")
         return False
     body = (
-        f'Response sent in Signal by device "{escape(device_name)}".'
-        if device_name else "Response sent in Signal by unknown device."
+        f'<p>Response sent in Signal by <b>{escape(device_name)}</b>.</p>'
+        if device_name else "<p>Response sent in Signal by <b>unknown device</b>.</p>"
     )
     response = requests.post(
         f"{BASE_URL}/conversations/{conversation_id}/reply",
