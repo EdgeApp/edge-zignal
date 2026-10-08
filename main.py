@@ -30,9 +30,11 @@ def main():
                     print(f"📑 Conversation #{conversationId}")
 
                     message = (
-                        f"Conversation: {conversationId} \n\n"
-                        "This is an automated response to let you know we have received your message and an Edge agent will be accessing our Signal account soon to respond to any inquiries.\n\n"
-                        "Please note: no messages here are shared with our ticket managing system, keeping all communication private and encrypted by Signal."
+                        "**💬 Thanks for contacting Edge!**\n\n"
+                        "We’ve received your message. An Edge support agent will reply here on Signal.\n\n"
+                        "*🔒 Your messages remain end-to-end encrypted in Signal. "
+                        "Their contents are never copied to our support ticket system.*\n\n"
+                        f"`Conversation: {conversationId}`"
                     )
 
                     if conversationId is not None:

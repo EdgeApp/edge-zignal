@@ -102,7 +102,23 @@ class ReplyTests(unittest.TestCase):
                 main.main()
         incoming.assert_called_once_with('customer-uuid')
         self.assertEqual(send.call_args.args[0], 'customer-uuid')
+        message = send.call_args.args[1]
+        self.assertTrue(message.startswith('**💬 Thanks for contacting Edge!**'))
+        self.assertIn('*🔒 Your messages remain end-to-end encrypted in Signal. ', message)
+        self.assertTrue(message.endswith('`Conversation: ticket`'))
         self.note.assert_not_called()
+
+
+class SendTests(unittest.TestCase):
+    @patch('signal_api.requests.post')
+    def test_acknowledgment_uses_v2_styled_send(self, post):
+        post.return_value = response({'timestamp': 123})
+        post.return_value.status_code = 201
+        signal_api.send_signal_message('customer-uuid', '**Welcome**')
+        post.assert_called_once_with('http://localhost:8090/v2/send', json={
+            'message': '**Welcome**', 'number': signal_api.SIGNAL_BRIDGE_NUMBER,
+            'recipients': ['customer-uuid'], 'text_mode': 'styled',
+        })
 
 
 class DeviceTests(unittest.TestCase):
