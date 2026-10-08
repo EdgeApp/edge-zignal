@@ -14,3 +14,6 @@ login.png
 
 # macOS system files
 .DS_Store
+
+# Private deployment settings
+.deploy.local.env
