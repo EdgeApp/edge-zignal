@@ -86,6 +86,20 @@ source venv/bin/activate
 python3 main.py
 ```
 
+## Finding a conversation in Signal
+
+When a new Intercom conversation is created, the bridge adds one user-attributed
+message: "Search Signal for Conversation: <id>". Search for `Conversation: <id>`
+in Signal to find the matching acknowledgment. The hint contains only the
+conversation ID, never Signal message contents. Follow-up incoming messages do
+not repeat it.
+
+If adding the hint fails, the failure is logged and the normal creation flow
+continues with the same conversation ID; it does not create another ticket or
+retry the hint automatically.
+
+Run the mocked tests with `python3 -m unittest discover -s tests -v`.
+
 ## Incoming Signal messages
 
 The first incoming message creates a conversation from the Signal contact.
