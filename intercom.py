@@ -208,7 +208,10 @@ def _add_signal_search_hint(conversation_id, contact_id):
                 "message_type": "comment",
                 "type": "user",
                 "intercom_user_id": contact_id,
-                "body": f"<p>🔎 Search Signal for:</p><pre><code>{escape(str(conversation_id))}</code></pre>"
+                "body": (
+                    f"<p>🔎 Search Signal for:</p><pre><code>{escape(str(conversation_id))}</code></pre>"
+                    '<p><a href="https://signal.me/#open">Open Signal ↗</a></p>'
+                )
             },
             headers=HEADERS,
             timeout=15

@@ -25,7 +25,10 @@ class SearchHintTests(unittest.TestCase):
         self.assertEqual(post.call_args_list[0].args[0], 'https://api.intercom.io/conversations')
         self.assertEqual(post.call_args.kwargs['json'], {
             'message_type': 'comment', 'type': 'user', 'intercom_user_id': 'contact',
-            'body': '<p>🔎 Search Signal for:</p><pre><code>123456</code></pre>'
+            'body': (
+                '<p>🔎 Search Signal for:</p><pre><code>123456</code></pre>'
+                '<p><a href="https://signal.me/#open">Open Signal ↗</a></p>'
+            )
         })
         self.assertEqual(post.call_args.args[0], 'https://api.intercom.io/conversations/123456/reply')
         self.assertEqual(intercom._recent_conversations['contact'], '123456')
